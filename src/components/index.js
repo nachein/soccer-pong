@@ -24,7 +24,7 @@ export default class Game extends React.Component {
   render() {
     const {height, width } = Dimensions.get('window');
     return (
-      <Stage height={height} width={width} style={{backgroundColor: 'blue'}}>
+      <Stage height={height} width={width}>
         <Ball />
       </Stage>
     );

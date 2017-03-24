@@ -15,7 +15,7 @@ export default class Ball extends React.Component {
         tileWidth={48}
         tileHeight={48}
         ticksPerFrame={1}
-        scale={2}
+        scale={this.context.scale}
         state={0}
         steps={[5]}
       />
