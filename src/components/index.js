@@ -10,7 +10,7 @@ export default class Game extends React.Component {
   };
 
   loop = () => {
-    // do something per frame
+    
   };
 
   componentDidMount() {
