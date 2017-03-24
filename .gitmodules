@@ -1,0 +1,3 @@
+[submodule "assets/soccerPong"]
+	path = assets/soccerPong
+	url = https://bitbucket.org/juan_ignacio_casal/soccer-pong-assets
