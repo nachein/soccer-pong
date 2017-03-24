@@ -16,8 +16,8 @@ export default class Ball extends React.Component {
 
     this.state = {
       speed: {
-        x: 5,
-        y: 5
+        x: 10,
+        y: 10
       },
       position: {
         x: 0,
@@ -27,7 +27,8 @@ export default class Ball extends React.Component {
         x: 0,
         y: 0
       },
-      ticksPerFrame: 60
+      ticksPerFrame: 1,
+      repeat: true
     }
   }
 
@@ -73,30 +74,28 @@ export default class Ball extends React.Component {
   }
 
   calculateTicksPerFrame() {
-    let ticksPerFrame = 1;
-    if(Math.abs(this.state.velocity.y) <= 0.1) {
-      ticksPerFrame = 60;
+
+    const minTicksPerFrame = 12;
+
+    let ticksPerFrame = Math.floor((1 / this.state.velocity.y * minTicksPerFrame) / this.state.speed.y)
+    let ticksPerFrameAbs = Math.abs(ticksPerFrame)
+    if(ticksPerFrame > 0) {
+      ticksPerFrame = ticksPerFrameAbs <= 1 ? 1 : Math.min(ticksPerFrame, minTicksPerFrame);
     }
     else {
-        ticksPerFrame = Math.floor(this.state.speed.y / this.state.velocity.y)
+      ticksPerFrame = ticksPerFrameAbs <= 1 ? 1 : Math.min(ticksPerFrameAbs, minTicksPerFrame);
     }
 
-    //console.log(ticksPerFrame, Math.floor(this.state.speed.y / this.state.velocity.y))
-    if(this.state.ticksPerFrame != 60) {
-      this.setState({
-        ticksPerFrame: ticksPerFrame
-      })
-    }
-
-
-
+    this.setState({
+      ticksPerFrame
+    });
   }
 
   render() {
 
     return (
       <Sprite
-        repeat={true}
+        repeat={this.state.repeat}
         src={require('../../assets/soccerPong/sprites/ball_frames.png')}
         tileWidth={48}
         tileHeight={48}
