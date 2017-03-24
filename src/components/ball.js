@@ -81,7 +81,7 @@ export default class Ball extends React.Component {
         ticksPerFrame = Math.floor(this.state.speed.y / this.state.velocity.y)
     }
 
-    console.log(ticksPerFrame, Math.floor(this.state.speed.y / this.state.velocity.y))
+    //console.log(ticksPerFrame, Math.floor(this.state.speed.y / this.state.velocity.y))
     if(this.state.ticksPerFrame != 60) {
       this.setState({
         ticksPerFrame: ticksPerFrame

@@ -1,6 +1,15 @@
 {
   "expo": {
+    "name": "Soccer Pong",
+    "description": "Classic Pong game with a touch of soccer",
     "sdkVersion": "15.0.0",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "slug": "soccer-pong",
+    "privacy": "public",
+    "primaryColor": "#badf3c",
+    "loading": {
+      "backgroundColor": "#badf3c"
+    },
+    "icon": "./assets/soccerPong/sprites/icon.png"
   }
 }
