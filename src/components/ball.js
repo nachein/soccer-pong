@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { Sprite } from 'react-game-kit/native';
 
 export default class Ball extends React.Component {
@@ -12,16 +12,29 @@ export default class Ball extends React.Component {
     super(props)
 
     this.dimensions = Dimensions.get('window');
+
+    // 1280 - height
+    // 860 - width
+    // 155 - arocs
+    // 150 - bandas
+    this.sideOffset = this.dimensions.width / 860 * 150;
+    this.upperOffset = this.dimensions.height / 1280 * 200;
+    this.goalOffset = this.dimensions.width / 860 * 120;
+
+    this.courtDimensions = { width: this.dimensions.width - this.sideOffset, height: this.dimensions.height - this.upperOffset};
+
     this.maxBounces = 8;
     this.speedIncrements = 0.05;
+
+
     this.state = {
       speed: {
         x: 10,
         y: 10
       },
       position: {
-        x: 0,
-        y: 0
+        x: this.sideOffset,
+        y: this.upperOffset * 2
       },
       velocity: {
         x: 0.2,
@@ -30,11 +43,13 @@ export default class Ball extends React.Component {
       bounces: 0,
       bounceMultiplier: 1,
       ticksPerFrame: 1,
-      repeat: true
+      repeat: true,
+      scored: false
     }
   }
 
   loop = () => {
+
 
     let speedX = this.state.velocity.x * this.state.speed.x;
     speedX = speedX > this.state.speed.x ? this.state.speed.x : speedX < -this.state.speed.x ? -this.state.speed.x : speedX;
@@ -51,16 +66,31 @@ export default class Ball extends React.Component {
     let bounces = this.state.bounces;
     let bounceMultiplier = this.state.bounceMultiplier;
 
-    if((newX + 48) >= this.dimensions.width || newX <= 0) {
+    let scored = this.state.scored;
+
+    if((newX + 48) >= this.courtDimensions.width - (scored ? this.goalOffset : 0) || newX <= (this.sideOffset + (scored ? this.goalOffset : 0))) {
       bounceX = true;
       newX = this.state.position.x;
       x = -x;
     }
 
-    if((newY + 48) >= this.dimensions.height || newY <= 0) {
-      bounceY = true;
-      newY = this.state.position.y;
-      y = -y;
+    if((newY) >= this.courtDimensions.height || (newY + 48) <= this.upperOffset) {
+
+      // check for goal
+      if(newX > this.goalOffset || newX < this.courtDimensions.width - this.goalOffset) {
+
+        if(!scored) {
+          console.log('gol');
+        }
+        scored = true;
+        //if()
+      }
+      else {
+        bounceY = true;
+        newY = this.state.position.y;
+        y = -y;
+      }
+
     }
 
     if(bounceY || bounceX) {
@@ -99,7 +129,8 @@ export default class Ball extends React.Component {
         y: newY
       },
       bounces,
-      bounceMultiplier
+      bounceMultiplier,
+      scored
     })
 
     this.calculateTicksPerFrame()
@@ -134,22 +165,22 @@ export default class Ball extends React.Component {
   render() {
 
     return (
-      <Sprite
-        repeat={this.state.repeat}
-        src={require('../../assets/soccerPong/sprites/ball_frames.png')}
-        tileWidth={48}
-        tileHeight={48}
-        ticksPerFrame={this.state.ticksPerFrame}
-        scale={this.context.scale}
-        state={0}
-        steps={[5]}
-        style={{
-          transform: [
-            {translateX: this.state.position.x},
-            {translateY: this.state.position.y}
-          ]
-        }}
-      />
+        <Sprite
+          repeat={this.state.repeat}
+          src={require('../../assets/soccerPong/sprites/ball_frames.png')}
+          tileWidth={48}
+          tileHeight={48}
+          ticksPerFrame={this.state.ticksPerFrame}
+          scale={this.context.scale}
+          state={0}
+          steps={[5]}
+          style={{
+            transform: [
+              {translateX: this.state.position.x},
+              {translateY: this.state.position.y}
+            ]
+          }}
+        />
     );
   }
 }
