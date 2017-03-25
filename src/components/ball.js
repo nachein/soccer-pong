@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Dimensions } from 'react-native';
 import { Sprite } from 'react-game-kit/native';
-import { Accelerometer } from 'expo';
 
 export default class Ball extends React.Component {
   static contextTypes = {
@@ -13,7 +12,8 @@ export default class Ball extends React.Component {
     super(props)
 
     this.dimensions = Dimensions.get('window');
-
+    this.maxBounces = 8;
+    this.speedIncrements = 0.05;
     this.state = {
       speed: {
         x: 10,
@@ -24,9 +24,11 @@ export default class Ball extends React.Component {
         y: 0
       },
       velocity: {
-        x: 0,
-        y: 0
+        x: 0.2,
+        y: 0.2
       },
+      bounces: 0,
+      bounceMultiplier: 1,
       ticksPerFrame: 1,
       repeat: true
     }
@@ -43,11 +45,61 @@ export default class Ball extends React.Component {
     let newX = this.state.position.x + speedX;
     let newY = this.state.position.y + speedY;
 
-    this.setState({
-      position: {
-        x: (newX + 48) < this.dimensions.width && newX > 0 ? newX : this.state.position.x,
-        y: (newY + 48) < this.dimensions.height && newY > 0 ? newY : this.state.position.y
+    let bounceX = false;
+    let bounceY = false;
+    let {x , y} = this.state.velocity;
+    let bounces = this.state.bounces;
+    let bounceMultiplier = this.state.bounceMultiplier;
+
+    if((newX + 48) >= this.dimensions.width || newX <= 0) {
+      bounceX = true;
+      newX = this.state.position.x;
+      x = -x;
+    }
+
+    if((newY + 48) >= this.dimensions.height || newY <= 0) {
+      bounceY = true;
+      newY = this.state.position.y;
+      y = -y;
+    }
+
+    if(bounceY || bounceX) {
+      bounces++;
+      // add sfx
+      if(bounces % bounceMultiplier == 0) {
+
+        bounceMultiplier += bounces / this.maxBounces;
+        if(Math.abs(x) < 1) {
+          if(x >= 0) {
+            x+=this.speedIncrements;
+          }
+          else {
+            x-=this.speedIncrements;
+          }
+        }
+
+        if(Math.abs(y) < 1) {
+          if(y >= 0) {
+            y+=this.speedIncrements;
+          }
+          else {
+            y-=this.speedIncrements;
+          }
+        }
       }
+    }
+
+    this.setState({
+      velocity: {
+        x: x,
+        y: y
+      },
+      position: {
+        x: newX,
+        y: newY
+      },
+      bounces,
+      bounceMultiplier
     })
 
     this.calculateTicksPerFrame()
@@ -55,22 +107,10 @@ export default class Ball extends React.Component {
 
   componentDidMount() {
     this.loopID = this.context.loop.subscribe(this.loop);
-
-    this.accelerometerSubscription = Accelerometer.addListener(accelerometerData => {
-      this.setState({
-        velocity: {
-          x: accelerometerData.x,
-          y: -accelerometerData.y
-        }
-      })
-    })
   }
 
   componentWillUnmount() {
     this.context.loop.unsubscribe(this.loopID);
-
-    this.accelerometerSubscription && this.accelerometerSubscription.remove();
-    this.accelerometerSubscription = null;
   }
 
   calculateTicksPerFrame() {
