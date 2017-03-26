@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { Dimensions, View } from 'react-native';
 import { Stage } from 'react-game-kit/native';
 
+import Player from './player'
 import Ball from './ball';
 
 export default class Game extends React.Component {
@@ -31,6 +32,7 @@ export default class Game extends React.Component {
 
     return (
       <Stage height={height} width={width}>
+        <Player />
         <Ball />
         {/* <View style={{
           position: 'absolute',

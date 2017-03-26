@@ -37,8 +37,8 @@ export default class Ball extends React.Component {
         y: this.upperOffset * 2
       },
       velocity: {
-        x: 0.2,
-        y: 0.2
+        x: 0.1,
+        y: -0.2
       },
       bounces: 0,
       bounceMultiplier: 1,
